@@ -28,6 +28,9 @@
 Установить на личный компьютер:
 
 - VirtualBox
+
+![image](https://user-images.githubusercontent.com/59846765/150690929-0438e292-e948-49f8-9eb3-b86098dd1703.png)
+
 - Vagrant
 - Ansible
 
