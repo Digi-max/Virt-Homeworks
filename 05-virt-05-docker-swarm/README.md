@@ -34,7 +34,7 @@ docker node ls
 ```
 > Ответ
 <p align="center">
-  <img width="1200" height="600" src=".\2022-02-11_004047.jpg">
+  <img src=".\2022-02-11_004047.jpg">
 </p>
 ## Задача 3
 
