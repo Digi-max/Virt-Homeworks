@@ -1,6 +1,6 @@
 resource "yandex_compute_instance" "node02" {
   name                      = "node02"
-  zone                      = "ru-central1-a"
+  zone                      = "ru-central1-b"
   hostname                  = "node02.netology.yc"
   allow_stopping_for_update = true
 
