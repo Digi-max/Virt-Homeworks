@@ -11,6 +11,27 @@
 в который будут складываться данные БД и бэкапы.
 
 Приведите получившуюся команду или docker-compose манифест.
+>Ответ
+```yml
+version: "3.9"
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: "maxdb"
+      POSTGRES_USER: "maxuser"
+      POSTGRES_PASSWORD: "maxuser"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./InitDatabaseScripts:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+      - ./BACKUP:/var/lib/postgresql/data/backup
+    ports:
+      - "5432:5432"
+```
+```bash
+docker-compose up
+```
 
 ## Задача 2
 
@@ -34,9 +55,24 @@
 
 Приведите:
 - итоговый список БД после выполнения пунктов выше,
+<p align="center">
+  <img src=".\2022-03-16_021147.jpg">
+</p>
 - описание таблиц (describe)
+<p align="center">
+  <img src=".\2022-03-16_021536.jpg">
+</p>
 - SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+```sql
+SELECT grantee,table_catalog, table_schema, table_name, privilege_type FROM information_schema.table_privileges WHERE table_name = 'orders' or table_name = 'clients';
+```
+
 - список пользователей с правами над таблицами test_db
+
+<p align="center">
+  <img src=".\2022-03-16_022538.jpg">
+</p>
+
 
 ## Задача 3
 
@@ -68,6 +104,10 @@
     - запросы 
     - результаты их выполнения.
 
+<p align="center">
+  <img src=".\2022-03-16_022954.jpg">
+</p>
+
 ## Задача 4
 
 Часть пользователей из таблицы clients решили оформить заказы из таблицы orders.
@@ -86,6 +126,18 @@
  
 Подсказк - используйте директиву `UPDATE`.
 
+```
+update  clients set order_num = 3 where id = 1;
+update  clients set order_num = 4 where id = 2;
+update  clients set order_num = 5 where id = 3;
+```
+```
+select * from clients as c where exists (select id from orders as o where c.order_num = o.id) ;
+```
+<p align="center">
+  <img src=".\2022-03-16_115910.jpg">
+</p>
+
 ## Задача 5
 
 Получите полную информацию по выполнению запроса выдачи всех пользователей из задачи 4 
@@ -93,18 +145,52 @@
 
 Приведите получившийся результат и объясните что значат полученные значения.
 
+<p align="center">
+  <img src=".\2022-03-16_120252.jpg">
+</p>
+
+> Показывает нагрузку на запросы с разбивкой по шагам (план выполенения)
+> Получается операция с таблицей orders заняла больше всего времени
+
 ## Задача 6
 
 Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
 
+```bash
+root@48bc9753beae:~# pg_dump -U maxuser -W maxdb > /var/lib/postgresql/data/BACKUP/maxdb.sql
+```
 Остановите контейнер с PostgreSQL (но не удаляйте volumes).
 
+```bash
+docker-compose stop
+```
 Поднимите новый пустой контейнер с PostgreSQL.
+
+```
+version: "3.9"
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: "maxdb"
+      POSTGRES_USER: "maxuser"
+      POSTGRES_PASSWORD: "maxuser"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - .:/var/lib/postgresql/data
+      - ../postgresql/BACKUP:/var/lib/postgresql/data/backup
+    ports:
+      - "5432:5432"
+```
 
 Восстановите БД test_db в новом контейнере.
 
+```bash
+docker exec -i postgresql2_postgres_1 psql -U maxuser -d maxdb -f /var/lib/postgresql/data/backup/maxdb.sql
+```
 Приведите список операций, который вы применяли для бэкапа данных и восстановления. 
 
+> Так как pg_dump не выгружает роли, то нужно использовать pg_dumpall
 ---
 
 ### Как cдавать задание
