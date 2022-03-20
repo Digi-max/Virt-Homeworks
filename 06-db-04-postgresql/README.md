@@ -10,10 +10,44 @@
 
 **Найдите и приведите** управляющие команды для:
 - вывода списка БД
+
+```
+postgres=# \l
+                                 List of databases
+   Name    |  Owner   | Encoding |  Collate   |   Ctype    |   Access privileges
+-----------+----------+----------+------------+------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.utf8 | en_US.utf8 |
+ template0 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.utf8 | en_US.utf8 | =c/postgres          +
+           |          |          |            |            | postgres=CTc/postgres
+(3 rows)
+```
 - подключения к БД
+
+```
+postgres=# \c postgres
+Password:
+You are now connected to database "postgres" as user "postgres".
+postgres=#
+```
 - вывода списка таблиц
+
+```
+postgres=# \dtS
+                    List of relations
+   Schema   |          Name           | Type  |  Owner
+------------+-------------------------+-------+----------
+ pg_catalog | pg_aggregate            | table | postgres
+ pg_catalog | pg_am                   | table | postgres
+ pg_catalog | pg_amop                 | table | postgres
+
+ и т.д.
+```
 - вывода описания содержимого таблиц
+> \d[S+]  NAME
 - выхода из psql
+> \q
 
 ## Задача 2
 
@@ -32,6 +66,15 @@
 
 **Приведите в ответе** команду, которую вы использовали для вычисления и полученный результат.
 
+```sql
+test_database=# select attname, avg_width from pg_stats where tablename='orders' order by avg_width desc;
+ attname | avg_width
+---------+-----------
+ title   |        16
+ id      |         4
+ price   |         4
+(3 rows)
+```
 ## Задача 3
 
 Архитектор и администратор БД выяснили, что ваша таблица orders разрослась до невиданных размеров и
@@ -40,7 +83,23 @@
 
 Предложите SQL-транзакцию для проведения данной операции.
 
+```sql
+create table orders_1 (like orders);
+insert into orders_1 select * from orders where price > 499;
+create table orders_2 (like orders);
+insert into orders_2 select * from orders where price <= 499;
+```
 Можно ли было изначально исключить "ручное" разбиение при проектировании таблицы orders?
+
+> Использовать секционирование при создании таблицы
+
+```sql
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    title character varying(80) NOT NULL,
+    price integer DEFAULT 0
+) PARTITION BY RANGE (price);
+```
 
 ## Задача 4
 
@@ -48,6 +107,7 @@
 
 Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
 
+> во всех секциях, где создаётся таблица, добавить к **title** параметр **UNIQUE**,
 ---
 
 ### Как cдавать задание
