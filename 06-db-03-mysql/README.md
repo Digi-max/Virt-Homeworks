@@ -34,28 +34,7 @@ PS C:\Users\Max\06-db-03-mysql> cat .\test_dump.sql | docker exec -i mysql-max s
 ```
 mysql> status
 --------------
-mysql  Ver 8.0.28 for Linux on x86_64 (MySQL Community Server - GPL)
-
-Connection id:          18
-Current database:
-Current user:           root@localhost
-SSL:                    Not in use
-Current pager:          stdout
-Using outfile:          ''
-Using delimiter:        ;
 Server version:         8.0.28 MySQL Community Server - GPL
-Protocol version:       10
-Connection:             Localhost via UNIX socket
-Server characterset:    utf8mb4
-Db     characterset:    utf8mb4
-Client characterset:    latin1
-Conn.  characterset:    latin1
-UNIX socket:            /var/run/mysqld/mysqld.sock
-Binary data as:         Hexadecimal
-Uptime:                 15 hours 45 min 17 sec
-
-Threads: 2  Questions: 79  Slow queries: 0  Opens: 145  Flush tables: 3  Open tables: 63  Queries per second avg: 0.001
---------------
 ```
 Подключитесь к восстановленной БД и получите список таблиц из этой БД.
 
