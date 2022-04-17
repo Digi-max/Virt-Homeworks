@@ -107,6 +107,10 @@ CREATE TABLE public.orders (
 
 Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
 
+```bash
+PS C:\Users\Max> docker exec -it psql bash
+root@460979fc8ed3:/# pg_dump -U postgres test_database > DB_dump.sql
+```
 > во всех секциях, где создаётся таблица, добавить к **title** параметр **UNIQUE**,
 ---
 
